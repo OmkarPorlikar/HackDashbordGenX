@@ -10,7 +10,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "tsc",
+    "build": "vite build",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "preview": "vite preview",
     "prepublish": "npm run build"
