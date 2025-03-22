@@ -147,6 +147,12 @@ export function RegistrationDataView() {
                       <span className="text-gray-400">Reason:</span>{" "}
                       {entry?.reasonForParticipation}
                     </p>
+
+                     <p className="text-sm">
+                      <span className="text-gray-400">Problem Statement</span>{" "}
+                      {entry?.problemStatement}
+                    </p>
+                    
                   </div>
                 </div>
               </div>
