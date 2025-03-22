@@ -1,10 +1,19 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    exclude: ['lucide-react'],
+  build: {
+    outDir: 'dist', // Ensure build output directory
   },
+  server: {
+    // Make sure to use middleware to handle routing properly
+    middlewareMode: false, 
+  },
+  preview: {
+    // This helps when serving the build version locally
+    port: 4173,
+    strictPort: true,
+    open: true,
+  }
 });
