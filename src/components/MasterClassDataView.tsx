@@ -3,13 +3,15 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { fetchMasterClassRegistrations, MasterClassData } from '../api';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { GraduationCap } from 'lucide-react';
+import { GraduationCap, Search } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 export function MasterClassDataView() {
   const [masterClasses, setMasterClasses] = useState<MasterClassData[]>([]);
+  const [filteredMasterClasses, setFilteredMasterClasses] = useState<MasterClassData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -17,11 +19,26 @@ export function MasterClassDataView() {
     try {
       const data = await fetchMasterClassRegistrations();
       setMasterClasses(data);
+      setFilteredMasterClasses(data); // Initialize filtered results with all data
     } catch (error) {
       console.error("Failed to fetch master class data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const term = event.target.value.toLowerCase();
+    setSearchTerm(term);
+    
+    // Filter the master classes based on search term
+    const filtered = masterClasses.filter((entry) => 
+      entry.email.toLowerCase().includes(term) || 
+      entry.fullName.toLowerCase().includes(term)
+    );
+    
+    // Update the filtered results
+    setFilteredMasterClasses(filtered);
   };
 
   useEffect(() => {
@@ -119,6 +136,18 @@ export function MasterClassDataView() {
           </div>
         </div>
 
+        {/* Search Bar */}
+        <div className='search-bar flex items-center mt-6 mb-4 bg-gray-700 px-4 py-2 rounded-lg shadow-md'>
+          <Search className='mr-2' />
+          <input 
+            type="text"
+            placeholder='Search by name or email'
+            value={searchTerm}
+            onChange={handleSearch}
+            className="w-full bg-transparent text-white focus:outline-none placeholder-gray-400"
+          />
+        </div>
+
         {/* Navigation & Action Buttons */}
         <div className="flex flex-col sm:flex-row justify-between items-center my-4">
           <button 
@@ -144,35 +173,47 @@ export function MasterClassDataView() {
           </div>
         </div>
 
+        {/* Results count */}
+        {searchTerm && (
+          <div className="text-sm text-gray-400 mb-4">
+            Found {filteredMasterClasses.length} results for "{searchTerm}"
+          </div>
+        )}
+
         {/* Master Class Data List */}
         <div className="space-y-4">
-          {masterClasses.map((entry, index) => (
-            <div key={index} className="bg-gray-700 rounded-lg p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-medium">{entry.fullName}</h3>
-                  <p className="text-sm text-gray-400">{entry.email}</p>
-                  <p className="text-sm text-gray-400">{entry.mobileNumber}</p>
-                </div>
-                <div>
-                  <p className="text-sm"><span className="text-gray-400">Age:</span> {entry.age}</p>
-                  <p className="text-sm"><span className="text-gray-400">Experience:</span> {entry.exp}</p>
-                  <div className="text-sm">
-                    <span className="text-gray-400">Classes:</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {entry.classes.map((cls, i) => (
-                        <span key={i} className="px-2 py-1 bg-gray-600 rounded-full text-xs">
-                          {cls}
-                        </span>
-                      ))}
+          {filteredMasterClasses.length > 0 ? (
+            filteredMasterClasses.map((entry, index) => (
+              <div key={index} className="bg-gray-700 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-medium">{entry.fullName}</h3>
+                    <p className="text-sm text-gray-400">{entry.email}</p>
+                    <p className="text-sm text-gray-400">{entry.mobileNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm"><span className="text-gray-400">Age:</span> {entry.age}</p>
+                    <p className="text-sm"><span className="text-gray-400">Experience:</span> {entry.exp}</p>
+                    <div className="text-sm">
+                      <span className="text-gray-400">Classes:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {entry.classes.map((cls, i) => (
+                          <span key={i} className="px-2 py-1 bg-gray-600 rounded-full text-xs">
+                            {cls}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-400">
+              No results match your search. Try different keywords.
             </div>
-          ))}
+          )}
         </div>
-
       </div>
     </div>
   );
