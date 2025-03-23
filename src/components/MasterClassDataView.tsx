@@ -1,9 +1,24 @@
+
+
+
 import { useState, useEffect } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
 import { fetchMasterClassRegistrations, MasterClassData } from '../api';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { GraduationCap, Search } from 'lucide-react';
+import { 
+  GraduationCap, 
+  Search, 
+  RefreshCw, 
+  FileText, 
+  ArrowLeft, 
+  Mail, 
+  Phone, 
+  Calendar, 
+  Briefcase, 
+  BookOpen, 
+  Award
+} from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -19,7 +34,7 @@ export function MasterClassDataView() {
     try {
       const data = await fetchMasterClassRegistrations();
       setMasterClasses(data);
-      setFilteredMasterClasses(data); // Initialize filtered results with all data
+      setFilteredMasterClasses(data);
     } catch (error) {
       console.error("Failed to fetch master class data:", error);
     } finally {
@@ -31,13 +46,11 @@ export function MasterClassDataView() {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
     
-    // Filter the master classes based on search term
     const filtered = masterClasses.filter((entry) => 
       entry.email.toLowerCase().includes(term) || 
       entry.fullName.toLowerCase().includes(term)
     );
     
-    // Update the filtered results
     setFilteredMasterClasses(filtered);
   };
 
@@ -55,7 +68,7 @@ export function MasterClassDataView() {
     // Remove 'id' field from export
     const formattedData = masterClasses.map(({ id, ...rest }) => ({
       ...rest,
-      classes: rest.classes.join(", "), // Convert array to string for readability
+      classes: rest.classes.join(", "),
     }));
 
     // Convert JSON to worksheet
@@ -68,8 +81,8 @@ export function MasterClassDataView() {
     const headerRow = headers.map((header) => ({
       v: header.toUpperCase(),
       s: {
-        fill: { fgColor: { rgb: "4F81BD" } }, // Blue background
-        font: { bold: true, color: { rgb: "FFFFFF" } }, // White text
+        fill: { fgColor: { rgb: "4F81BD" } },
+        font: { bold: true, color: { rgb: "FFFFFF" } },
         alignment: { horizontal: "center", vertical: "center" },
         border: {
           top: { style: "thin", color: { rgb: "000000" } },
@@ -108,7 +121,7 @@ export function MasterClassDataView() {
           const value = row[header as keyof typeof formattedData[0]];
           return value ? value.toString().length : 10;
         })
-      ) + 2 // Add padding
+      ) + 2
     }));
 
     // Create workbook and append sheet
@@ -122,86 +135,168 @@ export function MasterClassDataView() {
     saveAs(data, "MasterClass_Registrations.xlsx");
   };
 
-  if (loading) return <LoadingSpinner />;
+  // Get unique class categories for filtering
+  const uniqueClasses = Array.from(
+    new Set(masterClasses.flatMap(entry => entry.classes))
+  );
+
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 to-purple-900">
+      <div className="text-center">
+        <LoadingSpinner />
+        <p className="mt-4 text-indigo-200 animate-pulse">Loading masterclass data...</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden">
-      <div className="p-6">
-        {/* Registration Count Box */}
-        <div className="flex items-center w-full md:w-[40%] mx-auto justify-center gap-4 bg-slate-100/30 backdrop-blur-lg p-8 rounded-lg shadow-md">
-          <GraduationCap className="w-8 h-8 text-blue-400" />
-          <div>
-            <p className="text-gray-400 text-center">Total Registrations</p>
-            <p className="text-2xl font-bold text-center">{masterClasses.length}</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 to-purple-900 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-indigo-300 mb-2">
+            MasterClass Dashboard
+          </h1>
+          <p className="text-indigo-200 max-w-2xl mx-auto">
+            Manage and view all masterclass registrations in one place
+          </p>
         </div>
 
-        {/* Search Bar */}
-        <div className='search-bar flex items-center mt-6 mb-4 bg-gray-700 px-4 py-2 rounded-lg shadow-md'>
-          <Search className='mr-2' />
-          <input 
-            type="text"
-            placeholder='Search by name or email'
-            value={searchTerm}
-            onChange={handleSearch}
-            className="w-full bg-transparent text-white focus:outline-none placeholder-gray-400"
-          />
+        {/* Stats Card & Search */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Stats Card */}
+          <div className="bg-indigo-800/40 backdrop-blur-xl p-6 rounded-2xl shadow-lg border border-indigo-600/30 flex items-center transform transition-all hover:scale-105 hover:shadow-purple-600/10">
+            <div className="p-4 rounded-full bg-purple-500/20 mr-4">
+              <GraduationCap className="w-8 h-8 text-purple-300" />
+            </div>
+            <div>
+              <p className="text-indigo-200 text-sm font-medium">Total Registrations</p>
+              <p className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-300">
+                {filteredMasterClasses.length}
+              </p>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="lg:col-span-2">
+            <div className="bg-indigo-800/40 backdrop-blur-xl p-4 rounded-2xl shadow-lg border border-indigo-600/30 transition-all focus-within:border-purple-400/50 focus-within:shadow-purple-500/20">
+              <div className="flex items-center">
+                <Search className="text-indigo-300 w-5 h-5 mr-3" />
+                <input
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="w-full bg-transparent text-white focus:outline-none placeholder-indigo-300/70 text-lg"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Navigation & Action Buttons */}
-        <div className="flex flex-col sm:flex-row justify-between items-center my-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <button 
             onClick={() => navigate("/home")} 
-            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition"
+            className="px-5 py-3 bg-indigo-700/80 hover:bg-indigo-600/80 rounded-xl text-white font-medium transition-all flex items-center gap-2 w-full sm:w-auto justify-center shadow-lg hover:shadow-xl"
           >
-            ← Back to Dashboard
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Dashboard</span>
           </button>
-          <div className="flex gap-2 mt-2 sm:mt-0">
+          <div className="flex gap-3 w-full sm:w-auto">
             <button 
               onClick={fetchData} 
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium transition disabled:opacity-50"
+              className="px-5 py-3 bg-blue-600/90 hover:bg-blue-500/90 rounded-xl text-white font-medium transition-all flex items-center gap-2 flex-1 justify-center shadow-lg hover:shadow-xl disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Refreshing..." : "Refresh"}
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <span>{loading ? "Refreshing..." : "Refresh"}</span>
             </button>
             <button 
               onClick={exportToExcel} 
-              className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white font-medium transition"
+              className="px-5 py-3 bg-emerald-600/90 hover:bg-emerald-500/90 rounded-xl text-white font-medium transition-all flex items-center gap-2 flex-1 justify-center shadow-lg hover:shadow-xl"
             >
-              Export to Excel
+              <FileText className="w-4 h-4" />
+              <span>Export</span>
             </button>
           </div>
         </div>
 
-        {/* Results count */}
+        {/* Results count with nice styling */}
         {searchTerm && (
-          <div className="text-sm text-gray-400 mb-4">
-            Found {filteredMasterClasses.length} results for "{searchTerm}"
+          <div className="mb-6 px-4 py-3 bg-indigo-800/30 rounded-xl inline-flex items-center">
+            <Search className="w-4 h-4 text-indigo-300 mr-2" />
+            <span className="text-indigo-200">
+              Found <strong>{filteredMasterClasses.length}</strong> results for "<span className="italic">{searchTerm}</span>"
+            </span>
           </div>
         )}
 
+        {/* Category filters - horizontal scrolling chips */}
+        <div className="mb-6 overflow-x-auto pb-2">
+          <div className="flex gap-2 min-w-max">
+            <button className="px-4 py-2 bg-purple-500/90 text-white rounded-full text-sm font-medium shadow-md">
+              All Classes
+            </button>
+            {uniqueClasses.map((cls, index) => (
+              <button 
+                key={index} 
+                className="px-4 py-2 bg-indigo-800/40 hover:bg-indigo-700/60 text-indigo-200 rounded-full text-sm font-medium transition-all shadow-md"
+              >
+                {cls}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Master Class Data List */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {filteredMasterClasses.length > 0 ? (
             filteredMasterClasses.map((entry, index) => (
-              <div key={index} className="bg-gray-700 rounded-lg p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-medium">{entry.fullName}</h3>
-                    <p className="text-sm text-gray-400">{entry.email}</p>
-                    <p className="text-sm text-gray-400">{entry.mobileNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm"><span className="text-gray-400">Age:</span> {entry.age}</p>
-                    <p className="text-sm"><span className="text-gray-400">Experience:</span> {entry.exp}</p>
-                    <div className="text-sm">
-                      <span className="text-gray-400">Classes:</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {entry.classes.map((cls, i) => (
-                          <span key={i} className="px-2 py-1 bg-gray-600 rounded-full text-xs">
-                            {cls}
-                          </span>
-                        ))}
+              <div 
+                key={index} 
+                className="bg-indigo-800/40 backdrop-blur-xl rounded-2xl shadow-lg border border-indigo-600/30 overflow-hidden transition-all hover:border-purple-500/30 hover:shadow-xl"
+              >
+                <div className="p-1">
+                  <div className="bg-gradient-to-r from-indigo-600/20 to-purple-600/20 p-5 rounded-xl">
+                    <div className="flex flex-col md:flex-row gap-6">
+                      {/* Personal Info Section */}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-white mb-3">{entry.fullName}</h3>
+                        <div className="space-y-3">
+                          <div className="flex items-center text-indigo-200">
+                            <Mail className="w-4 h-4 mr-2 text-purple-300" />
+                            <span>{entry.email}</span>
+                          </div>
+                          <div className="flex items-center text-indigo-200">
+                            <Phone className="w-4 h-4 mr-2 text-purple-300" />
+                            <span>{entry.mobileNumber}</span>
+                          </div>
+                          <div className="flex items-center text-indigo-200">
+                            <Calendar className="w-4 h-4 mr-2 text-purple-300" />
+                            <span>Age: {entry.age} years</span>
+                          </div>
+                          <div className="flex items-center text-indigo-200">
+                            <Briefcase className="w-4 h-4 mr-2 text-purple-300" />
+                            <span>Experience: {entry.exp} years</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Class Info Section */}
+                      <div className="flex-1 bg-indigo-700/30 p-4 rounded-lg">
+                        <div className="flex items-center mb-3">
+                          <BookOpen className="w-5 h-5 mr-2 text-purple-300" />
+                          <h4 className="text-lg font-medium text-white">Enrolled Classes</h4>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {entry.classes.map((cls, i) => (
+                            <div key={i} className="flex items-center px-3 py-2 bg-indigo-600/50 rounded-lg">
+                              <Award className="w-4 h-4 text-purple-300 mr-2" />
+                              <span className="text-indigo-100">{cls}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -209,11 +304,34 @@ export function MasterClassDataView() {
               </div>
             ))
           ) : (
-            <div className="text-center py-8 text-gray-400">
-              No results match your search. Try different keywords.
+            <div className="bg-indigo-800/40 backdrop-blur-xl p-8 rounded-2xl shadow-lg border border-indigo-600/30 text-center">
+              <div className="inline-flex justify-center items-center p-4 rounded-full bg-indigo-700/50 mb-4">
+                <Search className="w-6 h-6 text-indigo-300" />
+              </div>
+              <h3 className="text-xl font-medium text-indigo-200 mb-2">No results found</h3>
+              <p className="text-indigo-300/70">
+                Try adjusting your search criteria or refresh the data.
+              </p>
             </div>
           )}
         </div>
+
+        {/* Pagination - Optional */}
+        {filteredMasterClasses.length > 10 && (
+          <div className="mt-8 flex justify-center">
+            <nav className="flex items-center space-x-2">
+              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">
+                Previous
+              </button>
+              <button className="px-3 py-1 rounded-md bg-purple-600/90 text-white">1</button>
+              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">2</button>
+              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">3</button>
+              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">
+                Next
+              </button>
+            </nav>
+          </div>
+        )}
       </div>
     </div>
   );
