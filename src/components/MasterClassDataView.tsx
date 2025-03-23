@@ -316,22 +316,7 @@ export function MasterClassDataView() {
           )}
         </div>
 
-        {/* Pagination - Optional */}
-        {filteredMasterClasses.length > 10 && (
-          <div className="mt-8 flex justify-center">
-            <nav className="flex items-center space-x-2">
-              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">
-                Previous
-              </button>
-              <button className="px-3 py-1 rounded-md bg-purple-600/90 text-white">1</button>
-              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">2</button>
-              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">3</button>
-              <button className="px-3 py-1 rounded-md bg-indigo-700/60 text-indigo-200 hover:bg-indigo-600/60">
-                Next
-              </button>
-            </nav>
-          </div>
-        )}
+ 
       </div>
     </div>
   );
