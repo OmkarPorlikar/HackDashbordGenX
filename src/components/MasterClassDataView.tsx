@@ -274,11 +274,11 @@ export function MasterClassDataView() {
                           </div>
                           <div className="flex items-center text-indigo-200">
                             <Calendar className="w-4 h-4 mr-2 text-purple-300" />
-                            <span>Age: {entry.age} years</span>
+                            <span>Age: {entry.age} </span>
                           </div>
                           <div className="flex items-center text-indigo-200">
                             <Briefcase className="w-4 h-4 mr-2 text-purple-300" />
-                            <span>Experience: {entry.exp} years</span>
+                            <span>Experience: {entry.exp} </span>
                           </div>
                         </div>
                       </div>
