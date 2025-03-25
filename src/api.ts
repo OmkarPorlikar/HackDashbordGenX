@@ -9,6 +9,7 @@ export interface RegistrationData {
   fullName: string;
   email: string;
   mobileNumber: string;
+  teamId : string;
   teamName: string;
   teamSize: number;
   collegeName: string;
@@ -82,3 +83,31 @@ throw  error;
 }
 
 }
+
+
+export const postPptStatus = async(formData) =>{
+  console.log(formData , "form data");
+  try{
+const data = await axios.post('http://localhost:8004/pptStatus' , formData)
+return data;
+console.log(data , "data");
+  }catch(error){
+console.log(error , "error")
+throw  error;
+
+  }
+}
+
+
+
+export const getPPTStatus = async (teamId: string) => {
+  try {
+    const response = await axios.get(`http://localhost:8004/pptStatus/getPPTStatus`, {
+      params: { teamId }, // Sending teamId as query param
+    });
+    return response.data || {};
+  } catch (error) {
+    console.error("Error fetching PPT status:", error);
+    return {};
+  }
+};
