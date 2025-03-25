@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { fetchRegistrations, RegistrationData } from "../api";
 import React from "react";
-import {  Search, RefreshCw, FileText, ArrowLeft, UserPlus, Mail, Phone, Building, MapPin, BookOpen, Users2, HelpCircle, Heart } from "lucide-react";
+import { Search, RefreshCw, FileText, ArrowLeft, UserPlus, Mail, Phone, Building, MapPin, BookOpen, Users2, HelpCircle, Heart } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,15 @@ export function RegistrationDataView() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+
+  const handleClick = (pptId:string) =>{
+
+    console.log("navigated" );
+   
+    navigate('/pptStatus' , {state:{pptId}})
+    
+  }
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -156,8 +165,10 @@ export function RegistrationDataView() {
             </div>
           ) : (
             filteredRegistrations.map((entry, index) => (
-              <div 
-                key={index} 
+<>   
+              {/* // <a href={`/getSingleRegistration/${entry?.teamId}`}>   */}
+              <div
+                key={index}
                 className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-700/50 overflow-hidden transition-all hover:border-gray-600/50 hover:shadow-xl"
               >
                 <div className="p-1">
@@ -192,10 +203,20 @@ export function RegistrationDataView() {
 
                       {/* Right Section - Team Info */}
                       <div className="flex-1 bg-gray-700/30 p-4 rounded-lg">
-                        <div className="flex items-center mb-3">
-                          <Users2 className="w-5 h-5 mr-2 text-purple-400" />
-                          <h4 className="text-lg font-medium text-white">Team Information</h4>
+
+                        <div className="flex justify-between items-center">
+                          
+                          <div className="flex items-center mb-3">
+                            <Users2 className="w-5 h-5 mr-2 text-purple-400" />
+                            <h4 className="text-lg font-medium text-white">Team Information</h4>
+                          </div>
+                           
+                           <button className="bg-orange-400 px-4 py-2 rounded-sm " key={index} onClick={()=>handleClick(entry.teamId)}>  PPT Status    </button>
+
                         </div>
+
+
+
                         <div className="space-y-2">
                           <div className="grid grid-cols-3 gap-2">
                             <span className="text-sm text-gray-400">Team Name:</span>
@@ -226,6 +247,8 @@ export function RegistrationDataView() {
                   </div>
                 </div>
               </div>
+              {/* </a> */}
+              </>
             ))
           )}
         </div>
@@ -248,5 +271,7 @@ export function RegistrationDataView() {
         )} */}
       </div>
     </div>
+
+
   );
 }
