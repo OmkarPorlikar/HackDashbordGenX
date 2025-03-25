@@ -10,6 +10,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Colleges from "./components/Colleges";
 import { Link } from "react-router-dom";
+import PptStatus from "./components/PptStatus";
+import SingleRegistrationPage from "./components/SingleRegistrationPage";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("isLoggedIn"));
@@ -32,7 +34,7 @@ function App() {
             <div className="flex items-center justify-between mb-8">
               <Link to="/home">
                 <h1 className="xs:text-xl text-3xl text-center font-bold">Admin Dashboard</h1>
-              </Link> 
+              </Link>
               {isAuthenticated && (
                 <button
                   onClick={handleLogout}
@@ -45,40 +47,63 @@ function App() {
             </div>
 
             <Routes>
-              <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Login  />} />
-              <Route path="/login" element={isAuthenticated ? <Navigate to="/home" /> : <Login  />} />
-              <Route 
-                path="/home" 
+              <Route path="/" element={isAuthenticated ? <Navigate to="/home" /> : <Login />} />
+              <Route path="/login" element={isAuthenticated ? <Navigate to="/home" /> : <Login />} />
+              <Route
+                path="/home"
                 element={
                   <PrivateRoute>
                     <Dashboard />
                   </PrivateRoute>
-                } 
+                }
               />
-              <Route 
-                path="/registration" 
+
+              <Route
+                path="/registration"
                 element={
                   <PrivateRoute>
                     <RegistrationDataView />
                   </PrivateRoute>
-                } 
+                }
               />
-              <Route 
-                path="/masterclass" 
+
+{/* 
+              <Route
+                path="/getSingleRegistration/:id"
+                element={
+                  <PrivateRoute>
+                    <SingleRegistrationPage />
+                  </PrivateRoute>
+                }
+              /> */}
+
+
+              <Route
+                path="/masterclass"
                 element={
                   <PrivateRoute>
                     <MasterClassDataView />
                   </PrivateRoute>
-                } 
+                }
               />
-              <Route 
-                path="/colleges/:id" 
+              <Route
+                path="/colleges/:id"
                 element={
                   <PrivateRoute>
                     <Colleges />
                   </PrivateRoute>
-                } 
+                }
               />
+
+              <Route
+                path="/pptStatus"
+                element={
+                  <PrivateRoute>
+                    <PptStatus />
+                  </PrivateRoute>
+                }
+              />
+
               <Route path="*" element={<Navigate to={isAuthenticated ? "/home" : "/login"} />} />
             </Routes>
           </div>
