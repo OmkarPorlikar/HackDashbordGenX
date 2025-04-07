@@ -17,6 +17,8 @@ export function RegistrationDataView() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [pptStatuses, setPptStatuses] = useState({});
+
 
   const handleClick = (pptId:string) =>{
 
@@ -197,6 +199,11 @@ export function RegistrationDataView() {
                           <div className="flex items-center text-gray-300">
                             <MapPin className="w-4 h-4 mr-2 text-blue-400" />
                             <span className="text-sm">{entry.city}</span>
+                          </div>
+
+                          <div className="flex items-center bg-green-400 text-black p-2  w-[50%] rounded-sm">
+                            <MapPin className="w-4 h-4 mr-2 text-orange-600" />
+                            <span className="text-sm">{entry?.pptStatus}</span>
                           </div>
                         </div>
                       </div>
